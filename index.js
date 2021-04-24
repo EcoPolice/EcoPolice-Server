@@ -16,6 +16,10 @@ const sql = mysql.createPool({
     password: process.env.DB_PASSWORD
 })
 
+app.use(express.static(__dirname + "/public", {
+    maxAge: "1h"
+}));
+
 app.get("/", (req, res) => {
     console.log("Hello, log!");
     res.end("Hello!");
@@ -86,7 +90,7 @@ app.post("/upload", (req, res) =>{
         let newName = file.md5 + "." + file.name.split(".").pop();
         uploadPath += newName;
         promises.push(file.mv(uploadPath));
-        urls.push(`http://${process.env.SERVER_IP}/public/images/${newName}`);
+        urls.push(`http://${process.env.REAL_SERVER_IP}/images/${newName}`);
     }
     Promise.all(promises).then(values => {
         console.log(values);
