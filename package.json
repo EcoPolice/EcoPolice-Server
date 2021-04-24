@@ -1,13 +1,13 @@
 {
-  "name": "amc-makeathon",
+  "name": "EcoPolice-Server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Server for EcoPolice app",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["eco", "ecology", "disaster", "map", "sql", "express"],
+  "author": "Daniil Bogdanov",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
