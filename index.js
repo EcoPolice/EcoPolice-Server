@@ -87,13 +87,12 @@ app.post("/upload", (req, res) =>{
 
     for (let key of Object.keys(req.files)) {
         let file = req.files[key];
-        let newName = file.md5 + "." + file.name.split(".").pop();
+        let newName = file.md5;
         uploadPath += newName;
         promises.push(file.mv(uploadPath));
         urls.push(`http://${process.env.REAL_SERVER_IP}/images/${newName}`);
     }
-    Promise.all(promises).then(values => {
-        console.log(values);
+    Promise.all(promises).then(() => {
         res.end(JSON.stringify(urls));
     })
 })
