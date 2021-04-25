@@ -31,7 +31,7 @@ create table main
     product             text   null,
     volume              int    null,
     area                int    null,
-    damagedCount        int    null,
+    damageCount        int    null,
     damagedObjects      text   null,
     images              text   null,
     constraint main_id_uindex
