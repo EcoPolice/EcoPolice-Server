@@ -91,10 +91,10 @@ app.post("/upload", (req, res) =>{
     for (let key of Object.keys(req.files)) {
         let file = req.files[key];
         let newName = file.md5;
-        uploadPath += newName;
+        let curUploadPath = uploadPath + newName;
         promisesForMove.push(file.mv(uploadPath));
         urls.push(`http://${process.env.REAL_SERVER_IP}/images/${newName}`);
-        paths.push(uploadPath);
+        paths.push(curUploadPath);
     }
     Promise.all(promisesForMove).then(() => {
 
@@ -121,7 +121,8 @@ app.post("/upload", (req, res) =>{
                     flag = 0;
                      res.end(JSON.stringify({
                         status: "ERROR",
-                        description: "Neuro validation failed" + (v.error ? " (Error)" : "")
+                        description: "Neuro validation failed" +
+                            (v.error ? (" (Error)" + v.message === undefined ? "" : ": "+v.message) : "")
                     }));
                 }
             })
