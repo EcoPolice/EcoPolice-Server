@@ -6,7 +6,7 @@ Server for EcoPolice app
 or  
 ```bash
 npm i pm2 -g
-pm2 start index.js --watch
+pm2 start index.js --watch --ignore-watch 'public/*'
 ```
 
 ### Methods
@@ -31,7 +31,7 @@ create table main
     product             text   null,
     volume              int    null,
     area                int    null,
-    damageCount        int    null,
+    damageCount         int    null,
     damagedObjects      text   null,
     images              text   null,
     constraint main_id_uindex
