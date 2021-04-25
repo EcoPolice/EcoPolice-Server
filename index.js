@@ -6,6 +6,14 @@ const bodyParser = require("body-parser");
 const fileUpload = require('express-fileupload');
 const mysql = require("mysql2");
 const fetch = require('node-fetch');
+const exif = require('exif-parser');
+const validation = {
+    neuro: true,
+    coordinates: true,
+    coordinatesRadius:  0.8
+}
+
+
 require("dotenv").config();
 
 app.use(fileUpload());
@@ -92,38 +100,40 @@ app.post("/upload", (req, res) =>{
         let file = req.files[key];
         let newName = file.md5;
         let curUploadPath = uploadPath + newName;
-        promisesForMove.push(file.mv(uploadPath));
+        promisesForMove.push(file.mv(curUploadPath));
         urls.push(`http://${process.env.REAL_SERVER_IP}/images/${newName}`);
         paths.push(curUploadPath);
     }
     Promise.all(promisesForMove).then(() => {
 
-        paths.forEach(p => {
-            let u = `http://${process.env.PYTHON_SERVER_IP}:${process.env.PYTHON_SERVER_PORT}`;
-            console.log(u);
-            promisesForNeuro.push(
-                fetch(u, {
-                    method: 'post',
-                    body:    JSON.stringify({
-                        filepath: p
-                    }, null, 4),
-                    headers: { 'Content-Type': 'application/json' },
-                })
-                    .then(res => res.json())
-            );
-        })
+        if (validation.neuro) {
+            paths.forEach(p => {
+                let u = `http://${process.env.PYTHON_SERVER_IP}:${process.env.PYTHON_SERVER_PORT}`;
+                console.log(u);
+                promisesForNeuro.push(
+                    fetch(u, {
+                        method: 'post',
+                        body:    JSON.stringify({
+                            filepath: p
+                        }, null, 4),
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                        .then(res => res.json())
+                );
+            })
+        }
 
         Promise.all(promisesForNeuro).then((values) => {
             let flag = 1;
-            values.forEach(v => {
+            values?.forEach(v => {
                 console.log(v);
                 if (v.error || !v.is_oil) {
                     flag = 0;
                      res.end(JSON.stringify({
                         status: "ERROR",
                         description: "Neuro validation failed" +
-                            (v.error ? (" (Error)" + v.message === undefined ? "" : ": "+v.message) : "")
-                    }));
+                            (v.error ? (" (Error)" + (v.message === undefined ? "" : ": " + v.message)) : "")
+                    }, null, 4));
                 }
             })
             if (flag) res.end(JSON.stringify(urls, null, 4));
@@ -150,7 +160,29 @@ app.post("/add", bodyParser.json(), (req, res) => {
     let long = isNaN(parseFloat(req.body["coordinates"]?.second)) ? null : parseFloat(req.body["coordinates"]?.second);
     let images = req.body["images"].length === 0 ? null : req.body["images"].join("|");
 
+    if (validation.coordinates && images !== null && images.length !== 0 && lat !== null && long !== null) {
+        for (let i = 0; i < images.length; ++i) {
+            let imgUrl = images[i];
+            let imgPath = __dirname + "/public/images/" + imgUrl.split("/").pop();
+            let buffer = fs.readFileSync(imgPath);
+            let parser = exif.create(buffer);
+            try {
+                let result = parser.parse();
+                let imgLat = result?.tags?.GPSLatitude;
+                let imgLong = result?.tags?.GPSLongitude;
 
+                if (imgLat !== null && imgLong !== null) {
+                    if (Math.sqrt((imgLat - lat)**2 + (imgLong - long)**2) >= validation.coordinatesRadius) {
+                        res.end(JSON.stringify({
+                            status: "ERROR",
+                            description: "Coordinates validation failed"
+                        }, null, 4));
+                        return;
+                    }
+                }
+            } catch (e) {}
+        }
+    }
 
     let q = `insert into main (disasterName, disasterDate, owner, cause, product, volume, area, damagedCount, damagedObjects, lat, \`long\`, disasterDescription, objectName, images) values (${sql.escape(disasterName)}, ${sql.escape(disasterDate)}, ${sql.escape(owner)}, ${sql.escape(cause)}, ${sql.escape(product)}, ${sql.escape(volume)}, ${sql.escape(area)}, ${sql.escape(damagedCount)}, ${sql.escape(damagedObjects)}, ${sql.escape(lat)}, ${sql.escape(long)}, ${sql.escape(disasterDescription)}, ${sql.escape(objectName)}, ${sql.escape(images)})`;
     console.log(q);
