@@ -145,20 +145,20 @@ app.post("/add", bodyParser.json(), (req, res) => {
     console.log("/add");
     console.log(req.body);
     res.writeHead(200, {'Content-Type': 'text/json; charset=utf-8'});
-    let disasterName = req.body["name"].isEmpty() ? null : req.body["name"];
-    let disasterDescription = req.body["description"].isEmpty() ? null : req.body["description"];
-    let disasterDate = isNaN(parseInt(req.body["date"])) ? null : parseInt(req.body["date"]);
-    let objectName = req.body["objectName"].isEmpty() ? null : req.body["objectName"];
-    let owner = req.body["owner"].isEmpty() ? null : req.body["owner"];
-    let cause = req.body["cause"].isEmpty() ? null : req.body["cause"];
-    let product = req.body["product"].isEmpty() ? null : req.body["product"];
+    let disasterName = req.body["disasterName"] ? req.body["disasterName"] : null;
+    let disasterDescription = req.body["disasterDescription"] ?  req.body["disasterDescription"] : null;
+    let disasterDate = isNaN(parseInt(req.body["disasterDate"])) ? null : parseInt(req.body["disasterDate"]);
+    let objectName = req.body["objectName"] ? req.body["objectName"] : null;
+    let owner = req.body["owner"] ? req.body["owner"] : null;
+    let cause = req.body["cause"] ? req.body["cause"] : null;
+    let product = req.body["product"] ? req.body["product"] : null;
     let volume = isNaN(parseInt(req.body["volume"])) ? null : parseInt(req.body["volume"]);
     let area = isNaN(parseInt(req.body["area"])) ? null : parseInt(req.body["area"]);
-    let damagedCount = isNaN(parseInt(req.body["damagedCount"])) ? null : parseInt(req.body["damagedCount"]);
-    let damagedObjects = req.body["damagedObjects"].length === 0 ? null : req.body["damagedCount"].join("|");
-    let lat = isNaN(parseFloat(req.body["coordinates"]?.first)) ? null : parseFloat(req.body["coordinates"]?.first);
-    let long = isNaN(parseFloat(req.body["coordinates"]?.second)) ? null : parseFloat(req.body["coordinates"]?.second);
-    let images = req.body["images"].length === 0 ? null : req.body["images"].join("|");
+    let damageCount = isNaN(parseInt(req.body["damageCount"])) ? null : parseInt(req.body["damageCount"]);
+    let damagedObjects = !req.body["damagedObjects"] || req.body["damagedObjects"]?.length === 0 ? null : req.body["damagedCount"]?.join("|");
+    let lat = isNaN(parseFloat(req.body["lat"])) ? null : parseFloat(req.body["lat"]);
+    let long = isNaN(parseFloat(req.body["long"])) ? null : parseFloat(req.body["long"]);
+    let images = !req.body["images"] || req.body["images"]?.length === 0 ? null : req.body["images"]?.join("|");
 
     if (validation.coordinates && images !== null && images.length !== 0 && lat !== null && long !== null) {
         for (let i = 0; i < images.length; ++i) {
@@ -184,7 +184,7 @@ app.post("/add", bodyParser.json(), (req, res) => {
         }
     }
 
-    let q = `insert into main (disasterName, disasterDate, owner, cause, product, volume, area, damagedCount, damagedObjects, lat, \`long\`, disasterDescription, objectName, images) values (${sql.escape(disasterName)}, ${sql.escape(disasterDate)}, ${sql.escape(owner)}, ${sql.escape(cause)}, ${sql.escape(product)}, ${sql.escape(volume)}, ${sql.escape(area)}, ${sql.escape(damagedCount)}, ${sql.escape(damagedObjects)}, ${sql.escape(lat)}, ${sql.escape(long)}, ${sql.escape(disasterDescription)}, ${sql.escape(objectName)}, ${sql.escape(images)})`;
+    let q = `insert into main (disasterName, disasterDate, owner, cause, product, volume, area, damageCount, damagedObjects, lat, \`long\`, disasterDescription, objectName, images) values (${sql.escape(disasterName)}, ${sql.escape(disasterDate)}, ${sql.escape(owner)}, ${sql.escape(cause)}, ${sql.escape(product)}, ${sql.escape(volume)}, ${sql.escape(area)}, ${sql.escape(damageCount)}, ${sql.escape(damagedObjects)}, ${sql.escape(lat)}, ${sql.escape(long)}, ${sql.escape(disasterDescription)}, ${sql.escape(objectName)}, ${sql.escape(images)})`;
     console.log(q);
 
     sql.query(q, (err) => {
