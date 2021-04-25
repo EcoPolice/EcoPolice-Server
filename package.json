@@ -1,5 +1,5 @@
 {
-  "name": "EcoPolice-Server",
+  "name": "eco-police-server",
   "version": "1.0.0",
   "description": "Server for EcoPolice app",
   "main": "index.js",

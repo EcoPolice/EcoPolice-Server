@@ -151,7 +151,7 @@ app.post("/add", bodyParser.json(), (req, res) => {
 
 
 
-    let q = `insert into main (disasterName, disasterDate, owner, cause, product, volume, area, damageCount, damagedObjects, lat, \`long\`, disasterDescription, objectName, images) values (${sql.escape(disasterName)}, ${sql.escape(disasterDate)}, ${sql.escape(owner)}, ${sql.escape(cause)}, ${sql.escape(product)}, ${sql.escape(volume)}, ${sql.escape(area)}, ${sql.escape(damagedCount)}, ${sql.escape(damagedObjects)}, ${sql.escape(lat)}, ${sql.escape(long)}, ${sql.escape(disasterDescription)}, ${sql.escape(objectName)}, ${sql.escape(images)})`;
+    let q = `insert into main (disasterName, disasterDate, owner, cause, product, volume, area, damagedCount, damagedObjects, lat, \`long\`, disasterDescription, objectName, images) values (${sql.escape(disasterName)}, ${sql.escape(disasterDate)}, ${sql.escape(owner)}, ${sql.escape(cause)}, ${sql.escape(product)}, ${sql.escape(volume)}, ${sql.escape(area)}, ${sql.escape(damagedCount)}, ${sql.escape(damagedObjects)}, ${sql.escape(lat)}, ${sql.escape(long)}, ${sql.escape(disasterDescription)}, ${sql.escape(objectName)}, ${sql.escape(images)})`;
     console.log(q);
 
     sql.query(q, (err) => {
