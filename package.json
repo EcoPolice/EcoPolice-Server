@@ -15,7 +15,6 @@
     "exif-parser": "^0.1.12",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
-    "hash-files": "^1.1.1",
     "mysql2": "^2.2.5",
     "node-fetch": "^2.6.1"
   }
